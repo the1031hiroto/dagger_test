@@ -1,0 +1,29 @@
+name: deploy
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: dagger do build
+        uses: dagger/dagger-for-github@v2
+        with:
+          version: 0.2
+          workdir: ./my-app/
+          cmds: |
+            project init
+            project update
+            do build
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./my-app/_build
